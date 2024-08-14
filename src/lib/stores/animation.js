@@ -8,7 +8,7 @@ function createExportJson(initState) {
         addKeyFrame: (time) => {
             update((object) => [
                 {
-                    id: object.length,
+                    id: Math.random(),
                     animation: [],
                     time: time,
                 },
@@ -17,16 +17,28 @@ function createExportJson(initState) {
         },
         addServo: (keyFrameId, servoPin, initState, finalState) => {
             update((object) => {
-                if (!object[keyFrameId]) {
-                    return object
+                const keyframeIndex = object.findIndex(item => item.id === keyFrameId);
+                if (keyframeIndex !== -1) {
+                    const updatedKeyframe = {
+                        ...object[keyframeIndex],
+                        animation: [
+                            ...object[keyframeIndex].animation,
+                            {
+                                servoPin: servoPin,
+                                initState: initState,
+                                finalState: finalState
+                            }
+                        ]
+                    };
+
+                    // Return a new array with the updated keyframe
+                    return [
+                        ...object.slice(0, keyframeIndex),
+                        updatedKeyframe,
+                        ...object.slice(keyframeIndex + 1)
+                    ];
                 }
-                object[keyFrameId].animation.push({
-                    servoPin: servoPin,
-                    initState: initState,
-                    finalState: finalState
-                })
-                return [...object]
-            })
+            });
         },
         updateServo: (keyFrameId, servoPin, newInitState, newFinalState) => {
             update((object) => {
