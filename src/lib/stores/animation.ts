@@ -1,15 +1,16 @@
 import { writable } from "svelte/store";
+import { browser } from "$app/environment";
 
 export interface Servo {
-    id: number,
-    pin: string,
-    initValue: string,
-    endValue: string
+    id: number | null,
+    pin: string | null,
+    initValue: number | null,
+    endValue: number | null
 }
 
 export interface Keyframe {
-    time: string,
-    id: number,
+    time: number | null,
+    id: number | null,
     servos: Servo[]
 }
 
@@ -29,6 +30,13 @@ function createAnimation(init: Animation) {
                     ... store.initValues,
                     servo
                 ]
+
+                return store
+            })
+        },
+        deleteServo: (servo: Servo) => {
+            update(store => {
+                store.initValues = store.initValues.filter(item => item.id !== servo.id)
 
                 return store
             })
@@ -58,6 +66,14 @@ function createAnimation(init: Animation) {
 
                 return store
             })
+        },
+        updateKeyFrameServos: (keyframe: Keyframe) => {
+            update(store => {
+                const index = store.keyframes.findIndex(item => item.id == keyframe.id)
+                store.keyframes[index].servos = keyframe.servos
+
+                return store
+            })
         }
 
     }
@@ -67,3 +83,9 @@ export const animation = createAnimation({
     initValues: [],
     keyframes: []
 })
+
+animation.subscribe(val => {
+    if (browser) {
+        localStorage.setItem('teamStore', JSON.stringify(val));
+    }
+});
