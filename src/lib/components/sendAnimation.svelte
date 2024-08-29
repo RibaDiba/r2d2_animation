@@ -44,9 +44,9 @@
 
     </table>
 
-    <div>
+    <div class="mt-10">
         <label for="">
-            <input type="text" class="input-bordered input" bind:value={ip}>
+            <input type="text" class="input-bordered input" bind:value={ip} placeholder="Enter IP">
         </label>
     </div>
 </main>
