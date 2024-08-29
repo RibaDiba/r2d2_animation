@@ -1,6 +1,10 @@
 <script lang="ts">
-	import { animation } from '$lib/stores/animation';
+	import AddAnimation from '$lib/components/addAnimation.svelte';
+	import SendAnimation from '$lib/components/sendAnimation.svelte';
+import { animation } from '$lib/stores/animation';
 	import type { Servo, Keyframe, Animation } from '$lib/stores/animation';
+
+	let name: string;
 
 	let animationVal: Animation;
 	$: animation.subscribe((val) => {
@@ -9,7 +13,7 @@
 
 	function handleUpdate(keyframe: Keyframe) {
 		let servo: Servo = {
-			id: null,
+			id: Math.random(),
 			initValue: null,
 			endValue: null,
 			pin: null
@@ -82,9 +86,9 @@
 		>
 	</div>
 
-	<div class="mt-10">
+	<div class="mt-10 flex flex-col gap-5">
 		{#each animationVal.keyframes as keyframe, i}
-			<div class="collapse w-96 bg-base-200">
+			<div class="collapse w-1/2 bg-base-200">
 				<input type="radio" name="my-accordion-1" />
 				<div class="collapse-title text-xl font-medium">Keyframe: {i + 1}</div>
 				<div class="collapse-content">
@@ -106,31 +110,40 @@
 					</div>
 					<div class="mt-5 flex flex-col gap-5">
 						{#each keyframe.servos as keyframeServo}
-							<label for="" class="flex gap-3">
-								<select
-									name=""
-									id=""
-									class="select select-bordered"
-									bind:value={keyframeServo}
+							<label for="" class="flex gap-5">
+								<input
+									type="text"
+									placeholder="Pin"
+									class="input input-bordered w-16"
+									bind:value={keyframeServo.pin}
 									on:change={() => {
 										animation.updateKeyframe(keyframe);
 									}}
-								>
-									<option value="" disabled selected>Select Servo</option>
-									{#each animationVal.initValues as servo}
-										<option value={servo}>Servo: {servo.pin}</option>
-									{/each}
-								</select>
+								/>
 								<input
 									type="text"
-									placeholder="Inital Value"
-									class="input input-bordered"
+									class="input input-bordered w-32"
+									placeholder="Initial Value"
 									bind:value={keyframeServo.initValue}
 									on:change={() => {
-                                        console.log(animationVal)
-										animation.updateKeyFrameServos(keyframe);
+										animation.updateKeyframe(keyframe);
 									}}
 								/>
+								<input
+									type="text"
+									class="input input-bordered w-32"
+									placeholder="Final Value"
+									bind:value={keyframeServo.endValue}
+									on:change={() => {
+										animation.updateKeyframe(keyframe);
+									}}
+								/>
+								<button
+									class="btn btn-accent"
+									on:click={() => {
+										animation.deleteServoKeyframe(keyframe, keyframeServo);
+									}}>Delete</button
+								>
 							</label>
 						{/each}
 					</div>
@@ -138,4 +151,14 @@
 			</div>
 		{/each}
 	</div>
+
+	<div class="mt-10">
+		<AddAnimation/>
+	</div>
+
+	<div>
+		<SendAnimation/>
+	</div>
+
+
 </main>
