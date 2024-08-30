@@ -23,6 +23,13 @@ function createAnimationStore(initValue: AnimationStore) {
 
 				return store;
 			});
+		},
+		deleteAnimation: (aniamtion: Animation) => {
+			update(store => {
+				store.Animations = store.Animations.filter(item => item.id !== aniamtion.id)
+
+				return store
+			})
 		}
 	};
 }

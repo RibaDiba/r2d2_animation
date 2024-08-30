@@ -1,6 +1,7 @@
 <script lang="ts">
     import { animations } from "../stores/animationStore"
     import type { AnimationStore } from "$lib/stores/animationStore";
+    import type { Animation } from "$lib/stores/animation";
     let ip: string = ""
     import axios from "axios";
 
@@ -9,23 +10,23 @@
         animationStore = val
     })
 
-    function handlePost() {
-    const jsonData = animationStore; // Replace with your actual JSON data
-    const url = 'http://example.com/upload-json'; // Replace with your actual URL
+    function handleCopy(animation: Animation) {
+        let animationString = JSON.stringify(animation)
 
-    axios.post(url, jsonData)
-        .then(response => {
-            console.log('Data posted successfully:', response.data);
-        })
-        .catch(error => {
-            console.error('Error posting data:', error);
-        });
-}
+        navigator.clipboard.writeText(animationString)
+            .then(() => {
+                alert('Copied')
+            })
+            .catch(err => {
+                alert('Some Error occured, check  console')
+                console.log(err)
+            })
+    }
 </script>
 
 <main>
 
-    <table class="table mt-10">
+    <table class="table mt-10 w-96">
         <thead>
             <th>Name</th>
         </thead>
@@ -34,19 +35,18 @@
                 <tr>
                     <td>{animation.name}</td>
                     <td>
-                        <button class="btn btn-accent btn-sm" on:click={() => {
-                            handlePost()
-                        }}>Send</button>
+                        <button class="btn-accent btn btn-sm" on:click={() => {
+                            handleCopy(animation)
+                        }}>Copy to Clipboard</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-accent btn-ghost" on:click={() => {
+                            animations.deleteAnimation(animation)
+                        }}>Delete</button>
                     </td>
                 </tr>
             {/each}
         </tbody>
 
     </table>
-
-    <div class="mt-10">
-        <label for="">
-            <input type="text" class="input-bordered input" bind:value={ip} placeholder="Enter IP">
-        </label>
-    </div>
 </main>
